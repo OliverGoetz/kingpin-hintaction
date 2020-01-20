@@ -11,11 +11,11 @@ var (
 	app = kingpin.New("kingpin-hintaction", "demo how hintaction breaks arg order")
 
 	correctOrder     = app.Command("correctorder", "Command with correct arg order")
-	correctOrderArg1 = correctOrder.Arg("arg1", "Argument 1").Required().HintAction(giveHintOk).String()
+	correctOrderArg1 = correctOrder.Arg("arg1", "Argument 1").Required().HintAction(giveHintStatic).String()
 	correctOrderArg2 = correctOrder.Arg("arg2", "Argument 2").Required().String()
 
 	brokenOrder     = app.Command("brokenorder", "Command with broken arg order")
-	brokenOrderArg1 = brokenOrder.Arg("barg1", "Argument 1").Required().HintAction(giveHint).String()
+	brokenOrderArg1 = brokenOrder.Arg("barg1", "Argument 1").Required().HintAction(giveHintFromVar).String()
 	brokenOrderArg2 = brokenOrder.Arg("barg2", "Argument 2").Required().String()
 
 	argSet = app.Flag("argset", "set of arguments to use").Default("x").String()
@@ -25,15 +25,15 @@ type correctOrderCommandStruct struct{}
 
 type brokenOrderCommandStruct struct{}
 
-var args = []string{"foo", "bar"}
-
-func giveHint() []string {
-	return args
-}
-func giveHintOk() []string {
+func giveHintStatic() []string {
 	return []string{"foo", "bar"}
 }
 
+var args = []string{"foo", "bar"}
+
+func giveHintFromVar() []string {
+	return args
+}
 func (n *correctOrderCommandStruct) run(c *kingpin.ParseContext) error {
 	log.Printf("correct order command")
 	return nil
